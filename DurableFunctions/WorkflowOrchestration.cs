@@ -43,7 +43,7 @@ namespace DurableFunctions
                 second = await ctx.CallSubOrchestratorWithRetryAsync<EventInfo[]>("O_SubWorkFlow1", retryOptions, eventId);
 
 
-                //SubOrchestration 1
+                //SubOrchestration 2
                 last = await ctx.CallSubOrchestratorWithRetryAsync<EventInfo>("O_SubWorkFlow2", retryOptions, eventId);
             }
             catch (Exception e)
