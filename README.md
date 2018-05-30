@@ -52,7 +52,7 @@ curl $Result.statusQueryGetUri |Select-Object -Expand Content | ConvertFrom-Json
 
 ### Install the Infrastructure
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdanielscholl%2Fazure-durablefunctions%2Fmaster%2Ftemplates%2FIaaS%2Fazuredeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdanielscholl%2Fazure-durablefunctions%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 
