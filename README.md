@@ -52,13 +52,7 @@ $Prefix = "<unique_prefix>"
 
                         pong
     Forms             : {}
-    Headers           : {[Content-Length, 4], [Content-Type, text/plain; charset=utf-8], [Date, Wed, 30 May 2018 19:51:58
-                        GMT], [Server, Kestrel]...}
-    Images            : {}
-    InputFields       : {}
-    Links             : {}
-    ParsedHtml        : mshtml.HTMLDocumentClass
-    RawContentLength  : 4
+    ...
 
     # AIQL Logging Query
     traces
