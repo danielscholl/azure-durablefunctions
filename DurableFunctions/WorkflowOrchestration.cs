@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 
 namespace DurableFunctions
@@ -45,7 +43,7 @@ namespace DurableFunctions
                 second = await ctx.CallSubOrchestratorWithRetryAsync<EventInfo[]>("O_SubWorkFlow1", retryOptions, eventId);
 
 
-                // SubOrchestration 1
+                //SubOrchestration 1
                 last = await ctx.CallSubOrchestratorWithRetryAsync<EventInfo>("O_SubWorkFlow2", retryOptions, eventId);
             }
             catch (Exception e)
@@ -63,9 +61,9 @@ namespace DurableFunctions
 
             return new
             {
-                first,
-                second,
-                last
+                First = first,
+                Second = second,
+                Last = last
             };
         }
 
