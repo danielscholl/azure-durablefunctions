@@ -17,7 +17,7 @@ namespace DurableFunctions
             TraceWriter log)
         {
             log.Info("Ping function processed a request.");
-            return req.CreateResponse(HttpStatusCode.OK, "pong");
+            return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(@"pong") };   
         }
     }
 }

@@ -88,10 +88,9 @@ namespace DurableFunctions
             TraceWriter log)
         {
             log.Info($"Getting Activity Codes out of Configuration");
-            return ConfigurationManager.AppSettings["ActivityCodes"]
-                .Split(',')
-                .Select(int.Parse)
-                .ToArray();
+
+            var activityCodes = Environment.GetEnvironmentVariable("ActivityCodes");
+            return activityCodes.Split(',').Select(int.Parse).ToArray();
         }
 
         [FunctionName("A_SendApproval")]
@@ -109,7 +108,7 @@ namespace DurableFunctions
             };
 
             log.Info($"Executed approval activity {approvalInfo.EventId}");
-            var host = ConfigurationManager.AppSettings["Host"];
+            var host = Environment.GetEnvironmentVariable("Host");
 
             var functionAddress = $"{host}/api/Approval/{approvalCode}";
             var approvedLink = functionAddress + "?result=APPROVED";

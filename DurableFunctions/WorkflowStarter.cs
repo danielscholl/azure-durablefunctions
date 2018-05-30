@@ -20,11 +20,7 @@ namespace DurableFunctions
         {
 
             // parse query parameter
-            var eventId = req.GetQueryNameValuePairs().FirstOrDefault(q => string.Compare(q.Key, "eventId", true) == 0).Value;
-
-            // Get Request Body
-            dynamic data = await req.Content.ReadAsAsync <object>();
-            eventId = eventId ?? data.eventId;
+            var eventId = req.RequestUri.ParseQueryString()["eventId"];
 
             var instanceId = await starter.StartNewAsync("O_ProcessWorkflow", Convert.ToInt32(eventId));
 
@@ -40,8 +36,7 @@ namespace DurableFunctions
             [Table("Approvals", "Approval", "{id}", Connection = "azureWebJobsStorage")] Approval approval,
             TraceWriter log)
         {
-            string result = req.GetQueryNameValuePairs()
-                .FirstOrDefault(q => string.Compare(q.Key, "result", true) == 0).Value;
+            string result = req.RequestUri.ParseQueryString()["result"];
 
             if (result == null)
                 return req.CreateResponse(HttpStatusCode.BadRequest, "Need an approval result");
