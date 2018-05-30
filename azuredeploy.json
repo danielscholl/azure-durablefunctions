@@ -21,6 +21,20 @@
         "Premium_LRS"
       ],
       "defaultValue": "Standard_LRS"
+    },
+    "repoURL": {
+      "type": "string",
+      "metadata": {
+        "description": "The URL for the GitHub repository that contains the project to deploy."
+      },
+      "defaultValue": "https://github.com/danielscholl/azure-durablefunctions.git"
+    },
+    "branch": {
+      "type": "string",
+      "metadata": {
+        "description": "The branch of the GitHub repository to use."
+      },
+      "defaultValue": "master"
     }
   },
   "variables": {
@@ -68,14 +82,25 @@
       }
     },
     {
+      "comments": "## Function Web Site ##",
+      "name": "[variables('functionAppName')]",
       "type": "Microsoft.Web/sites",
       "kind": "functionapp",
-      "name": "[variables('functionAppName')]",
       "apiVersion": "2016-08-01",
       "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+        "[resourceId('microsoft.insights/components', variables('appInsightsName'))]"
+      ],
       "properties": {
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
         "siteConfig": {
+          "cors": {
+            "allowedOrigins": [
+              "*"
+            ]
+          },
           "appSettings": [
             {
               "name": "AzureWebJobsDashboard",
@@ -121,10 +146,22 @@
           ]
         }
       },
-      "dependsOn": [
-        "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
-        "[resourceId('microsoft.insights/components', variables('appInsightsName'))]"
+      "resources": [
+        {
+
+          "comments": "## Sync from Source Control ##",
+          "name": "web",
+          "type": "sourcecontrols",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites', variables('functionAppName'))]"
+          ],
+          "properties": {
+            "RepoUrl": "[parameters('repoURL')]",
+            "branch": "[parameters('branch')]",
+            "IsManualIntegration": true
+          }
+        }
       ]
     }
   ]
