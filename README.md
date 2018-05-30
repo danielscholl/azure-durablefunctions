@@ -26,7 +26,7 @@ $Prefix = "<unique_prefix>"
 ```
 
 
-## Development
+## Develop the Solution
 ### Clone the repo
 
 ```bash
