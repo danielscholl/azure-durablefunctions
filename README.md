@@ -64,10 +64,15 @@ $Prefix = "<unique_prefix>"
 1.  Pattern #4: Monitoring
     ```powershell
     # Trigger the Workflow
-    $PERIODIC_RESULT = curl https://$WEBHOST/api/StartPeriodic | Select-Object -Expand Content | ConvertFrom-Json
+    $PERIODIC_RESULT = curl https://$WEBHOST/api/StartPeriodic |`
+    Select-Object -Expand Content | `
+    ConvertFrom-Json
 
     # Check the Status
-    curl $PERIODIC_RESULT.statusQueryGetUri |Select-Object -Expand Content | ConvertFrom-Json | ConvertTo-Json
+    curl $PERIODIC_RESULT.statusQueryGetUri |`
+        Select-Object -Expand Content | `
+        ConvertFrom-Json | `
+        ConvertTo-Json
 
     # Terminate the Workflow
     Invoke-RestMethod -Method Post -Uri $PERIODIC_RESULT.terminatePostUri
@@ -85,10 +90,15 @@ $Prefix = "<unique_prefix>"
     - SubOrchestration with Pattern #5: Human Interaction
     ```powershell
     # Trigger the Workflow
-    $RESULT = curl http://$WEBHOST/api/Workflow/Start?eventId=20 | Select-Object -Expand Content | ConvertFrom-Json
+    $RESULT = curl http://$WEBHOST/api/Workflow/Start?eventId=20 | `
+        Select-Object -Expand Content | `
+        ConvertFrom-Json
 
     # Check the Status
-    curl $Result.statusQueryGetUri |Select-Object -Expand Content | ConvertFrom-Json | ConvertTo-Json
+    curl $Result.statusQueryGetUri | `
+        Select-Object -Expand Content | `
+        ConvertFrom-Json | `
+        ConvertTo-Json
 
     # AIQL Logging Query
     traces
@@ -101,7 +111,10 @@ $Prefix = "<unique_prefix>"
     curl http://$WEBHOST/api/Approval/{GUID}?result=REJECT
 
     # Check the Status
-    curl $Result.statusQueryGetUri |Select-Object -Expand Content | ConvertFrom-Json | ConvertTo-Json
+    curl $Result.statusQueryGetUri | `
+        Select-Object -Expand Content | `
+        ConvertFrom-Json | `
+        ConvertTo-Json
     ```
 
 ## Develop the Solution Locally
@@ -137,7 +150,9 @@ Open the Solution and run in Debug Mode
 $Event=10
 
 ## Trigger the Workflow
-$Result = curl http://localhost:7071/api/Workflow/Start?eventId=20 | Select-Object -Expand Content | ConvertFrom-Json
+$Result = curl http://localhost:7071/api/Workflow/Start?eventId=20 | `
+    Select-Object -Expand Content | `
+    ConvertFrom-Json
 
 ## Monitor the output logs for the Approve/Reject URLs
 
@@ -146,5 +161,8 @@ curl http://localhost:7071/api/Approval/{GUID}?result=APPROVED
 curl http://localhost:7071/api/Approval/{GUID}?result=REJECT
 
 ## Get the status
-curl $Result.statusQueryGetUri |Select-Object -Expand Content | ConvertFrom-Json | ConvertTo-Json
+curl $Result.statusQueryGetUri | `
+    Select-Object -Expand Content | `
+    ConvertFrom-Json | `
+    ConvertTo-Json
 ```
