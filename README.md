@@ -25,13 +25,63 @@ $Prefix = "<unique_prefix>"
 .\install.ps1 -Prefix $Prefix -Subscription $Subscription
 ```
 
+### Test the Solution
 
-## Develop the Solution
+> _Note: To Access Streaming Logs you have to enable Diagnostics Application File System Logging_
+
+Set the WebHost
+`$WEBHOST = "my5qmjppnvdlaqg-func.azurewebsites.net"`
+
+Ping Test the API
+
+
+
+```powershell
+curl https://$WEBHOST/api/ping
+
+#Result
+StatusCode        : 200
+StatusDescription : OK
+Content           : pong
+RawContent        : HTTP/1.1 200 OK
+                    Content-Length: 4
+                    Content-Type: text/plain; charset=utf-8
+                    Date: Wed, 30 May 2018 19:51:58 GMT
+                    Server: Kestrel
+                    X-Powered-By: ASP.NET
+
+                    pong
+Forms             : {}
+Headers           : {[Content-Length, 4], [Content-Type, text/plain; charset=utf-8], [Date, Wed, 30 May 2018 19:51:58
+                    GMT], [Server, Kestrel]...}
+Images            : {}
+InputFields       : {}
+Links             : {}
+ParsedHtml        : mshtml.HTMLDocumentClass
+RawContentLength  : 4
+```
+
+```
+
+## Trigger the Workflow
+$Result = curl http://$WEBHOST/api/Workflow/Start?eventId=20 | Select-Object -Expand Content | ConvertFrom-Json
+
+## Approve or Reject the Activity
+curl http://$WEBHOST/api/Approval/{GUID}?result=APPROVED
+curl http://$WEBHOST/api/Approval/{GUID}?result=REJECT
+
+## Get the status
+curl $Result.statusQueryGetUri |Select-Object -Expand Content | ConvertFrom-Json | ConvertTo-Json
+
+```
+
+
+
+## Develop the Solution Locally
 ### Clone the repo
 
-```bash
-git clone https://github.com/danielscholl/docker-swarm-azure.git durable-functions
-```
+`git clone https://github.com/danielscholl/docker-swarm-azure.git durable-functions`
+
 
 ### Create a local.settings.json file
 
@@ -51,7 +101,7 @@ git clone https://github.com/danielscholl/docker-swarm-azure.git durable-functio
 Open the DurableFunctions.sln and Build the code.
 
 
-### Locally Test the Code
+### Test the Code
 
 Open the Solution and run in Debug Mode
 
