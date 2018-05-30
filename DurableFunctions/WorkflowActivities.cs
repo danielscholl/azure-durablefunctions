@@ -26,7 +26,7 @@ namespace DurableFunctions
             return new EventInfo
             {
                 EventId = eventId,
-                Activity = "Executed in Activity 1"
+                Activity = "Executed Activity 1"
             };
         }
 
@@ -41,7 +41,7 @@ namespace DurableFunctions
             // Simulate doing the activity
             await Task.Delay(1000);
 
-            info.Activity = "Executed in Activity 2";
+            info.Activity = "Executed Activity 2";
 
             return info;
         }
@@ -60,7 +60,7 @@ namespace DurableFunctions
             return new EventInfo
             {
                 EventId = eventId,
-                Activity = "Executed in Approval Activity"
+                Activity = "Executed Approval Activity"
             };
         }
 
@@ -78,7 +78,7 @@ namespace DurableFunctions
             return new EventInfo
             {
                 EventId = eventId,
-                Activity = "Executed in Rejected Activity"
+                Activity = "Executed Rejected Activity"
             };
         }
 
@@ -108,7 +108,7 @@ namespace DurableFunctions
                 OrchestrationId = approvalInfo.OrchestrationId
             };
 
-            log.Info($"Sending approval request for {approvalInfo.EventId}");
+            log.Info($"Executed approval activity {approvalInfo.EventId}");
             var host = ConfigurationManager.AppSettings["Host"];
 
             var functionAddress = $"{host}/api/Approval/{approvalCode}";
@@ -124,7 +124,7 @@ namespace DurableFunctions
             [ActivityTrigger] int eventId,
             TraceWriter log)
         {
-            log.Info($"Cleanup has occured for Event #{eventId}");
+            log.Info($"Executed Cleanup Activity #{eventId}");
 
             // Simulate doing the activity
             await Task.Delay(1000);
