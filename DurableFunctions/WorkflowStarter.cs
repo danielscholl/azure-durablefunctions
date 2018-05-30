@@ -50,7 +50,7 @@ namespace DurableFunctions
 
         [FunctionName("StartPeriodic")]
         public static async Task<HttpResponseMessage> StartPeriodicTask(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]
             HttpRequestMessage req,
             [OrchestrationClient] DurableOrchestrationClient client,
             TraceWriter log)
