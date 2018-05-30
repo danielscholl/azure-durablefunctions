@@ -48,6 +48,7 @@
   },
   "resources": [
     {
+      "comments": "## Microsoft Insights ##",
       "type": "microsoft.insights/components",
       "kind": "other",
       "name": "[variables('appInsightsName')]",
@@ -61,20 +62,26 @@
       "dependsOn": []
     },
     {
-      "type": "Microsoft.Storage/storageAccounts",
-      "sku": {
-        "name": "[parameters('storageAccountType')]"
-      },
-      "kind": "Storage",
+      "comments": "## Storage Account ##",
       "name": "[variables('storageAccountName')]",
+      "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2017-10-01",
-      "location": "[resourceGroup().location]"
+      "location": "[resourceGroup().location]",
+      "kind": "Storage",
+      "sku": {
+        "name": "[parameters('storageAccountType')]",
+        "tier": "Standard"
+      }
     },
     {
+      "comments": "## Hosting Plan ##",
+      "name": "[variables('hostingPlanName')]",
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2015-04-01",
-      "name": "[variables('hostingPlanName')]",
       "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[variables('storageId')]"
+      ],
       "properties": {
         "name": "[variables('hostingPlanName')]",
         "computeMode": "Dynamic",
@@ -95,6 +102,7 @@
       ],
       "properties": {
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+        "clientAffinityEnabled": false,
         "siteConfig": {
           "cors": {
             "allowedOrigins": [
@@ -120,11 +128,7 @@
             },
             {
               "name": "FUNCTIONS_EXTENSION_VERSION",
-              "value": "~1"
-            },
-            {
-              "name": "WEBSITE_NODE_DEFAULT_VERSION",
-              "value": "6.5.0"
+              "value": "beta"
             },
             {
               "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
@@ -148,7 +152,6 @@
       },
       "resources": [
         {
-
           "comments": "## Sync from Source Control ##",
           "name": "web",
           "type": "sourcecontrols",
