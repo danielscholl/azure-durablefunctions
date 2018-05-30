@@ -30,7 +30,7 @@ git clone https://github.com/danielscholl/docker-swarm-azure.git durable-functio
 }
 ```
 
-### Run the Function App
+### Test the Function App
 
 Open the Solution and run in Debug Mode
 
@@ -47,4 +47,18 @@ curl http://localhost:7071/api/Approval/{GUID}?result=REJECT
 
 # Get the status
 curl $Result.statusQueryGetUri |Select-Object -Expand Content | ConvertFrom-Json | ConvertTo-Json
+```
+
+
+### Install the Infrastructure
+
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdanielscholl%2Fazure-durablefunctions%2Fmaster%2Ftemplates%2FIaaS%2Fazuredeploy.json" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
+
+```powershell
+# Set the Subscription
+$Subscription = "<your_subscription>"
+$Prefix = "<unique_prefix>"
+.\install.ps1 -Prefix $Prefix -Subscription $Subscription
 ```
