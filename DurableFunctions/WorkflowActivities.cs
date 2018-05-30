@@ -111,10 +111,11 @@ namespace DurableFunctions
             var host = Environment.GetEnvironmentVariable("Host");
 
             var functionAddress = $"{host}/api/Approval/{approvalCode}";
+            
             var approvedLink = functionAddress + "?result=APPROVED";
+            log.Warning(approvedLink);
             var rejectedLink = functionAddress + "?result=REJECTED";
-            var message = $"Event #{approvalInfo.EventId} ready to be approved.  Approve={approvedLink}  Reject={rejectedLink}";
-            log.Info(message);
+            log.Warning(rejectedLink);
         }
 
 

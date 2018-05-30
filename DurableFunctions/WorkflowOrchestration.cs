@@ -118,7 +118,7 @@ namespace DurableFunctions
             // Implement Timeout
             using (var cts = new CancellationTokenSource())
             {
-                var timeoutAt = ctx.CurrentUtcDateTime.AddSeconds(30);
+                var timeoutAt = ctx.CurrentUtcDateTime.AddSeconds(120);
                 var timeoutTask = ctx.CreateTimer(timeoutAt, cts.Token);
                 var approvalTask = ctx.WaitForExternalEvent<string>("EVENT_APPROVAL");
 

@@ -16,7 +16,7 @@ namespace DurableFunctions
             HttpRequestMessage req, 
             TraceWriter log)
         {
-            log.Info("Ping function processed a request.");
+            log.Warning("Ping function processed a request.");
             return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(@"pong") };   
         }
     }
