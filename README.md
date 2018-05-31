@@ -84,13 +84,6 @@ $Prefix = "<unique_prefix>"
     
     # Result
     HTTP/1.1 202 Accepted
-    Content-Length: 149
-    Content-Type: application/json; charset=utf-8
-    Date: Thu, 31 May 2018 15:06:33 GMT
-    Location: https://dse42vlpxvu2u4y-func.azurewebsites.net/runtime/webhooks/DurableTaskExtension/instances/31fd33e419744154a34d715843ecd5ca?taskHub=DurableFunctionsHub&connection=Storage&code=uInXDPrmG7q8jp2FYI3cvzXi8kFghLviHacpSUFDkXWW7vsb2aJSYQ==
-    Retry-After: 5
-    Server: Kestrel
-    X-Powered-By: ASP.NET
 
     {
         "createdTime": "2018-05-31T15:06:14Z",
@@ -105,10 +98,6 @@ $Prefix = "<unique_prefix>"
 
     # Result
     HTTP/1.1 202 Accepted
-    Content-Length: 0
-    Date: Thu, 31 May 2018 15:07:42 GMT
-    Server: Kestrel
-    X-Powered-By: ASP.NET
     ```
 
     ```powershell
