@@ -30,38 +30,87 @@ $Prefix = "<unique_prefix>"
 
 > _Note: To Access Streaming Logs you have to enable Diagnostics Application File System Logging_
 
-1. Set the WebHost 
-    ```powershell
-    $WEBHOST = "<your_functionapp>.azurewebsites.net
+1. Simple Function Ping Test
+
+    ```bash
+    # Commands for Bash with HTTPie
+    RESOURCE_GROUP=<your_resource_group>
+    WEBHOST="https://"$(az functionapp list --resource-group ${RESOURCE_GROUP} --query [].defaultHostName -otsv)
+    http get $WEBHOST/api/ping
+
+    # Result
+    HTTP/1.1 200 OK
+    Content-Encoding: gzip
+    Content-Type: text/plain; charset=utf-8
+    Date: Thu, 31 May 2018 14:30:49 GMT
+    Server: Kestrel
+    Transfer-Encoding: chunked
+    Vary: Accept-Encoding
+    X-Powered-By: ASP.NET
+
+    pong
     ```
 
-1. Pattern #0:  Simple Function
     ```powershell
-    curl https://$WEBHOST/api/ping
+    # Commands for Powershell
+    $WEBHOST="https://<your_function_app>.azurewebsites.net/"
+    Invoke-RestMethod -Method Get -Uri $WEBHOST/api/ping
 
-    #Result
-    StatusCode        : 200
-    StatusDescription : OK
-    Content           : pong
-    RawContent        : HTTP/1.1 200 OK
-                        Content-Length: 4
-                        Content-Type: text/plain; charset=utf-8
-                        Date: Wed, 30 May 2018 19:51:58 GMT
-                        Server: Kestrel
-                        X-Powered-By: ASP.NET
+    # Result
+    pong
+    ```
 
-                        pong
-    Forms             : {}
-    ...
+    In Log Analytics query for logs
 
-    # AIQL Logging Query
+    ```sql
+    // Ping AIQL Logging Query
     traces
     | where operation_Name == "ping" 
     | where severityLevel == 2
     | sort by timestamp asc 
     ```
 
-1.  Pattern #4: Monitoring
+1.  Durable Function Periodic (Monitoring)
+    ```bash
+    # Commands for Bash with HTTPie
+    RESOURCE_GROUP=<your_resource_group>
+    WEBHOST="https://"$(az functionapp list --resource-group ${RESOURCE_GROUP} --query [].defaultHostName -otsv)
+    
+    WORKFLOW=$(http get $WEBHOST/api/StartPeriodic)
+    STATUS=$(echo $WORKFLOW |jq -r '.statusQueryGetUri')
+    TERMINATE=$(echo $WORKFLOW |jq -r '.terminatePostUri')
+
+    http get $STATUS
+    
+    # Result
+    HTTP/1.1 202 Accepted
+    Content-Length: 149
+    Content-Type: application/json; charset=utf-8
+    Date: Thu, 31 May 2018 15:06:33 GMT
+    Location: https://dse42vlpxvu2u4y-func.azurewebsites.net/runtime/webhooks/DurableTaskExtension/instances/31fd33e419744154a34d715843ecd5ca?taskHub=DurableFunctionsHub&connection=Storage&code=uInXDPrmG7q8jp2FYI3cvzXi8kFghLviHacpSUFDkXWW7vsb2aJSYQ==
+    Retry-After: 5
+    Server: Kestrel
+    X-Powered-By: ASP.NET
+
+    {
+        "createdTime": "2018-05-31T15:06:14Z",
+        "customStatus": null,
+        "input": 0,
+        "lastUpdatedTime": "2018-05-31T15:06:16Z",
+        "output": null,
+        "runtimeStatus": "Running"
+    }
+
+    http post $TERMINATE
+
+    # Result
+    HTTP/1.1 202 Accepted
+    Content-Length: 0
+    Date: Thu, 31 May 2018 15:07:42 GMT
+    Server: Kestrel
+    X-Powered-By: ASP.NET
+    ```
+
     ```powershell
     # Trigger the Workflow
     $PERIODIC_RESULT = curl https://$WEBHOST/api/StartPeriodic |`
@@ -77,17 +126,33 @@ $Prefix = "<unique_prefix>"
     # Terminate the Workflow
     Invoke-RestMethod -Method Post -Uri $PERIODIC_RESULT.terminatePostUri
 
-    # AIQL Logging Query
+    ```
+
+    In Log Analytics query for logs
+
+    ```sql
+    // Periodic AIQL Logging Query
     traces
     | where operation_Name == "A_PeriodicActivity" 
     | where severityLevel == 2
     | sort by timestamp asc 
     ```
 
-1.  Complex Workflow
-    - Pattern #1: Function chaining
-    - SubOrchestration with Pattern #2: Fan-Out
-    - SubOrchestration with Pattern #5: Human Interaction
+1.  Durable Function Complex Workflow
+    ```bash
+    # Commands for Bash with HTTPie
+    RESOURCE_GROUP=<your_resource_group>
+    WEBHOST="https://"$(az functionapp list --resource-group ${RESOURCE_GROUP} --query [].defaultHostName -otsv)
+    
+    EVENT_ID=10
+    WORKFLOW=$(http get $WEBHOST/api/Workflow/Start?eventId=${EVENT_ID})
+    STATUS=$(echo $WORKFLOW |jq -r '.statusQueryGetUri')
+    TERMINATE=$(echo $WORKFLOW |jq -r '.terminatePostUri')
+
+    http get $STATUS
+    ```
+
+
     ```powershell
     # Trigger the Workflow
     $RESULT = curl http://$WEBHOST/api/Workflow/Start?eventId=20 | `
