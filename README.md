@@ -70,6 +70,64 @@ $Prefix = "<unique_prefix>"
     | sort by timestamp asc 
     ```
 
+1.  Durable Function Complex Workflow
+    ```bash
+    # Commands for Bash with HTTPie
+    RESOURCE_GROUP=<your_resource_group>
+    WEBHOST="https://"$(az functionapp list --resource-group ${RESOURCE_GROUP} --query [].defaultHostName -otsv)
+    
+    EVENT_ID=10 WORKFLOW=$(http get $WEBHOST/api/Workflow/Start?eventId=${EVENT_ID})
+    STATUS=$(echo $WORKFLOW |jq -r '.statusQueryGetUri')
+    TERMINATE=$(echo $WORKFLOW |jq -r '.terminatePostUri')
+
+    http get $STATUS
+
+	GUID=<your_approval_guid>
+	http get $WEBHOST/api/Approval/${GUID}?result=APPROVED
+    ```
+
+
+    ```powershell
+    # Trigger the Workflow
+    $RESULT = curl http://$WEBHOST/api/Workflow/Start?eventId=20 | `
+        Select-Object -Expand Content | `
+        ConvertFrom-Json
+
+    # Check the Status
+    curl $Result.statusQueryGetUri | `
+        Select-Object -Expand Content | `
+        ConvertFrom-Json | `
+        ConvertTo-Json
+
+    # AIQL Logging Query
+    traces
+    | where operation_Name == "A_SendApproval"
+    | where severityLevel == 2
+	| where timestamp > ago(5m)
+    | sort by timestamp asc 
+
+    # Approve or Reject the Activity  (Automatically REJECT in 120 Seconds)
+    curl http://$WEBHOST/api/Approval/{GUID}?result=APPROVED
+    curl http://$WEBHOST/api/Approval/{GUID}?result=REJECT
+
+    # Check the Status
+    curl $Result.statusQueryGetUri | `
+        Select-Object -Expand Content | `
+        ConvertFrom-Json | `
+        ConvertTo-Json
+    ```
+
+	In Log Analytics query for logs
+
+    ```sql
+    // Periodic AIQL Logging Query
+    traces
+    | where operation_Name == "A_SendApproval"
+    | where severityLevel == 2
+	| where timestamp > ago(5m)
+    | sort by timestamp asc 
+    ```
+
 1.  Durable Function Periodic (Monitoring)
     ```bash
     # Commands for Bash with HTTPie
@@ -128,63 +186,6 @@ $Prefix = "<unique_prefix>"
     | sort by timestamp asc 
     ```
 
-1.  Durable Function Complex Workflow
-    ```bash
-    # Commands for Bash with HTTPie
-    RESOURCE_GROUP=<your_resource_group>
-    WEBHOST="https://"$(az functionapp list --resource-group ${RESOURCE_GROUP} --query [].defaultHostName -otsv)
-    
-    EVENT_ID=10 WORKFLOW=$(http get $WEBHOST/api/Workflow/Start?eventId=${EVENT_ID})
-    STATUS=$(echo $WORKFLOW |jq -r '.statusQueryGetUri')
-    TERMINATE=$(echo $WORKFLOW |jq -r '.terminatePostUri')
-
-    http get $STATUS
-
-	GUID=<your_approval_guid>
-	http get $WEBHOST/api/Approval/${GUID}?result=APPROVED
-    ```
-
-
-    ```powershell
-    # Trigger the Workflow
-    $RESULT = curl http://$WEBHOST/api/Workflow/Start?eventId=20 | `
-        Select-Object -Expand Content | `
-        ConvertFrom-Json
-
-    # Check the Status
-    curl $Result.statusQueryGetUri | `
-        Select-Object -Expand Content | `
-        ConvertFrom-Json | `
-        ConvertTo-Json
-
-    # AIQL Logging Query
-    traces
-    | where operation_Name == "A_SendApproval"
-    | where severityLevel == 2
-	| where timestamp > ago(5m)
-    | sort by timestamp asc 
-
-    # Approve or Reject the Activity  (Automatically REJECT in 120 Seconds)
-    curl http://$WEBHOST/api/Approval/{GUID}?result=APPROVED
-    curl http://$WEBHOST/api/Approval/{GUID}?result=REJECT
-
-    # Check the Status
-    curl $Result.statusQueryGetUri | `
-        Select-Object -Expand Content | `
-        ConvertFrom-Json | `
-        ConvertTo-Json
-    ```
-
-	In Log Analytics query for logs
-
-    ```sql
-    // Periodic AIQL Logging Query
-    traces
-    | where operation_Name == "A_SendApproval"
-    | where severityLevel == 2
-	| where timestamp > ago(5m)
-    | sort by timestamp asc 
-    ```
 
 ------------
 
