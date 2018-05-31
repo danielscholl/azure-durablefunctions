@@ -135,6 +135,7 @@ $Prefix = "<unique_prefix>"
     traces
     | where operation_Name == "A_PeriodicActivity" 
     | where severityLevel == 2
+	| where timestamp > ago(5m)
     | sort by timestamp asc 
     ```
 
@@ -144,12 +145,14 @@ $Prefix = "<unique_prefix>"
     RESOURCE_GROUP=<your_resource_group>
     WEBHOST="https://"$(az functionapp list --resource-group ${RESOURCE_GROUP} --query [].defaultHostName -otsv)
     
-    EVENT_ID=10
-    WORKFLOW=$(http get $WEBHOST/api/Workflow/Start?eventId=${EVENT_ID})
+    EVENT_ID=10 WORKFLOW=$(http get $WEBHOST/api/Workflow/Start?eventId=${EVENT_ID})
     STATUS=$(echo $WORKFLOW |jq -r '.statusQueryGetUri')
     TERMINATE=$(echo $WORKFLOW |jq -r '.terminatePostUri')
 
     http get $STATUS
+
+	GUID=<your_approval_guid>
+	http get $WEBHOST/api/Approval/${GUID}?result=APPROVED
     ```
 
 
@@ -169,6 +172,7 @@ $Prefix = "<unique_prefix>"
     traces
     | where operation_Name == "A_SendApproval"
     | where severityLevel == 2
+	| where timestamp > ago(5m)
     | sort by timestamp asc 
 
     # Approve or Reject the Activity  (Automatically REJECT in 120 Seconds)
@@ -181,6 +185,19 @@ $Prefix = "<unique_prefix>"
         ConvertFrom-Json | `
         ConvertTo-Json
     ```
+
+	In Log Analytics query for logs
+
+    ```sql
+    // Periodic AIQL Logging Query
+    traces
+    | where operation_Name == "A_SendApproval"
+    | where severityLevel == 2
+	| where timestamp > ago(5m)
+    | sort by timestamp asc 
+    ```
+
+------------
 
 ## Develop the Solution Locally
 ### Clone the repo
